@@ -56,4 +56,16 @@ Separating the pipeline into specialized agents eliminated prompt compromise. Th
 In a linear sequential pipeline:
 $$\text{Researcher} \longrightarrow \text{Writer} \longrightarrow \text{Reviewer}$$
 
-When the reviewer issued a `REVISION NEEDED` verdict in Topic 1, the framework had no native mechanism to route the critique backward to the writer for an automated second draft. Instead, the final deliverable consisted of the reviewer's critique output. Closing this loop requires dynamic orchestration patterns (such as hierarchical management or iterative feedback loops) where the reviewer's evaluation can trigger conditional re-execution of upstream tasks.
+When the reviewer issued a `REVISION NEEDED` verdict in Topic 1, the framework had no native mechanism to route the critique backward to the writer for an automated second draft. Instead, the final deliverable consisted of the reviewer's critique output. Closing this loop requires dynamic orchestration patterns (such as hierarchical management or iterative feedback celoops) where the reviewer's evaluation can trigger conditional re-execution of upstream tasks.
+
+# Day 3 Journal: Conversational Multi-Agent Coding Team with AutoGen
+
+## 1. Comparing Framework Philosophies: CrewAI vs. AutoGen
+* **CrewAI (Days 1–2):** Highly controlled, linear, and deterministic. You define explicit task objects with designated expected outputs, tools, and sequential process flows. It feels like an assembly line with strict quality gates.
+* **AutoGen (Day 3):** Fluid, conversational, and emergent. Agents share a single chat thread context and converse directly with one another. The workflow emerges from prompt cues (`NEXT: ...`, `TERMINATE`) and speaker selection strategies rather than a static DAG.
+
+## 2. Fit for the Research Team Project
+* For the **Research Team project**, **CrewAI** remains the superior architecture. Research synthesis requires rigid artifact generation (raw notes $\rightarrow$ structured executive brief $\rightarrow$ itemized QA review). AutoGen's unstructured chat transcript is better suited for brainstorming, iterative code refactoring, and back-and-forth debugging sessions.
+
+## 3. Tooling and Maintenance Friction
+* AutoGen's recent package bifurcation (`pyautogen` vs `ag2` vs `autogen-agentchat`) and legacy wrapper deprecations added setup friction compared to CrewAI. Using Google's OpenAI-compatible base URL endpoint (`https://generativelanguage.googleapis.com/v1beta/openai/`) provided the cleanest, most reliable connectivity without relying on brittle framework-specific adapters.
