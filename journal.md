@@ -24,3 +24,36 @@ The writer received granular technical findings and translated them into an exec
 
 ## 3. Architecture Reflection
 Separating the pipeline into specialized agents eliminated prompt compromise. The researcher operated with technical precision without needing narrative restraint, while the writer focused entirely on tone and synthesis without needing to generate raw research findings from scratch.
+
+# Day 2 Journal: Three-Agent Research Team with Live Web Grounding & Editorial Review
+
+## 1. Reviewer Verdicts Across 3 Test Topics
+
+* **Topic 1: Neuromorphic Computing Chips (2025–2026)**
+  * **Initial Verdict:** `REVISION NEEDED` $\rightarrow$ `APPROVED` (Self-corrected inline).
+  * **Critique Specificity:** Highly granular. The reviewer caught a temporal framing discrepancy (*"By 2026"* in the draft vs. *"late 2025 with 2026 outlook"* in the research brief) and flagged a conflation between current on-chip adaptation capabilities and future framework standardization goals.
+
+* **Topic 2: Solid State Battery Commercialization (2025–2026)**
+  * **Verdict:** `APPROVED`
+  * **Critique Specificity:** Validated that the draft correctly preserved the distinction between A-sample and B-sample validation phases, retained named OEM integrations (QuantumScape QSE-5 with Volkswagen PowerCo, Samsung SDI Ulsan facility), and highlighted dry-coating yield optimization as the critical path to cost parity.
+
+* **Topic 3: Direct Air Carbon Capture (Solid Sorbents vs. Liquid Solvents)**
+  * **Verdict:** `APPROVED`
+  * **Critique Specificity:** Confirmed complete factual transfer of the three thermodynamic and operational pillars: high-heat calcination (~900°C) vs. low-grade heat TVSA (80°C–120°C), oxidative solvent loss vs. solid sorbent stability, and centralized industrial contactors vs. modular distributed monoliths (reducing the parasitic "fan penalty").
+
+---
+
+## 2. Tool Grounding & Error Recovery Observations
+
+* **Autonomous Tool Invocations:** The researcher agent actively generated targeted queries across each topic rather than defaulting exclusively to pre-trained weights. When queries failed or returned empty results, the agent rephrased search strings across multiple iterations.
+* **Schema Self-Healing:** On Topic 3, the agent initially passed an invalid dictionary argument (`{'queries': [...]}` instead of `{'query': '...'}`). The ReAct runtime intercepted the Pydantic validation error and fed the schema trace back to the LLM, prompting it to immediately correct its input format in the subsequent step without crashing the pipeline.
+* **Guardrail Enforcement:** The `max_iter=5` constraint successfully prevented infinite retrieval loops when live queries returned sparse snippets, forcing the researcher to compile its briefing cleanly within the iteration budget.
+
+---
+
+## 3. Structural Limits of `Process.sequential`
+
+In a linear sequential pipeline:
+$$\text{Researcher} \longrightarrow \text{Writer} \longrightarrow \text{Reviewer}$$
+
+When the reviewer issued a `REVISION NEEDED` verdict in Topic 1, the framework had no native mechanism to route the critique backward to the writer for an automated second draft. Instead, the final deliverable consisted of the reviewer's critique output. Closing this loop requires dynamic orchestration patterns (such as hierarchical management or iterative feedback loops) where the reviewer's evaluation can trigger conditional re-execution of upstream tasks.
