@@ -69,3 +69,16 @@ When the reviewer issued a `REVISION NEEDED` verdict in Topic 1, the framework h
 
 ## 3. Tooling and Maintenance Friction
 * AutoGen's recent package bifurcation (`pyautogen` vs `ag2` vs `autogen-agentchat`) and legacy wrapper deprecations added setup friction compared to CrewAI. Using Google's OpenAI-compatible base URL endpoint (`https://generativelanguage.googleapis.com/v1beta/openai/`) provided the cleanest, most reliable connectivity without relying on brittle framework-specific adapters.
+
+# Day 4 Journal: Hierarchical Orchestration Analysis
+
+## 1. Manager Delegation Behavior
+* **Single vs. Modular Tasks:** When given a single open-ended task, the Manager delegated the entire workflow to the first agent. Guiding the crew with distinct, modular tasks forced the Manager to coordinate across all three specialists (`Researcher` -> `Writer` -> `Reviewer`).
+* **Fault Tolerance:** During execution, a transient API network disconnect (`Server disconnected without sending a response`) was caught and retried automatically by CrewAI runtime without terminating the session.
+
+## 2. Model Tiering Trade-offs
+* Setting `gemini-3.5-flash-lite` for the `manager_llm` provided reliable delegation decisions and context tracking, while `gemini-3.1-flash-lite` handled focused execution for workers.
+
+## 3. Architecture Verdict: Sequential vs. Hierarchical
+* For our 3-stage research pipeline with predictable dependencies, **`Process.sequential`** remains faster, cheaper, and more deterministic.
+* **`Process.hierarchical`** adds value when the task flow is dynamic or emergent, but introduces coordination token overhead for deterministic handoffs.
