@@ -18,14 +18,30 @@ llm = LLM(
     temperature=0.2,
 )
 
-# 2. Hardened Web Search Tool
+# 2. Hardened Web Search Tool with Automatic Query Simplification
 @tool("web_search")
 def web_search(query: str) -> str:
     """Search DuckDuckGo for recent and reliable information on a given query."""
+    def clean_query(q: str) -> str:
+        # Strip quotes and special punctuation
+        q_clean = re.sub(r'["\':\(\)\[\]]', ' ', q)
+        # Keep only the first 5 essential words for clean search matching
+        words = [w for w in q_clean.split() if len(w) > 2]
+        return " ".join(words[:5])
+
     try:
-        results = DDGS().text(query, max_results=4)
+        # 1. First attempt with cleaned query
+        cleaned = clean_query(query)
+        results = DDGS().text(cleaned, max_results=4)
+        
+        # 2. Fallback attempt if zero results returned
+        if not results:
+            fallback_q = " ".join(query.split()[:3])
+            results = DDGS().text(fallback_q, max_results=4)
+            
         if not results:
             return f"No results found for query: {query}"
+            
         formatted = []
         for r in results:
             title = r.get("title", "No Title")
@@ -34,8 +50,8 @@ def web_search(query: str) -> str:
         return "\n".join(formatted)
     except Exception as e:
         return f"Search failed with error: {str(e)}"
-    
-    
+
+
 
 # 3. Define Hardened Agents with Iteration & Retry Limits
 researcher = Agent(
@@ -170,6 +186,5 @@ def run_research_crew(topic: str) -> dict:
     }
 
 if __name__ == "__main__":
-    # Test Topic 1
-    test_topic = "Open Source LLMs vs Proprietary Models Enterprise Adoption Trends 2025 2026"
+    test_topic = "Automated AI Code Review and Cybersecurity Vulnerabilities in Software Pipelines"
     run_research_crew(test_topic)
