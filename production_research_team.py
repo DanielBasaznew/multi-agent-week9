@@ -150,7 +150,6 @@ def run_research_crew(topic: str) -> dict:
         agents=[researcher, writer, reviewer],
         tasks=[research_task, writing_task, review_task],
         process=Process.sequential,
-        verbose=True,
     )
 
     result = crew.kickoff()
