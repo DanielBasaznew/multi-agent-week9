@@ -157,9 +157,11 @@ def run_research_crew(topic: str) -> dict:
     output_text = str(result)
     word_count = len(output_text.split())
 
-    # 6. Save Artifact to Disk
+    # 6. Save Artifact to Disk with Safe Slug Handling
     os.makedirs("reports", exist_ok=True)
-    slug = re.sub(r'[^a-zA-Z0-9_-]', '_', topic.lower())[:40].strip('_')
+    slug = re.sub(r'[^a-zA-Z0-9_-]', '_', topic.lower()).strip('_')
+    # Truncate and guard against empty slugs (e.g. if topic was purely punctuation)
+    slug = slug[:40] if slug else "research_report"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filepath = os.path.join("reports", f"{slug}_{timestamp}.md")
 
@@ -185,5 +187,13 @@ def run_research_crew(topic: str) -> dict:
     }
 
 if __name__ == "__main__":
-    test_topic = "Automated AI Code Review and Cybersecurity Vulnerabilities in Software Pipelines"
-    run_research_crew(test_topic)
+    import sys
+    
+    print("\n--- Production Multi-Agent Research System ---")
+    user_topic = input("Enter a research topic (or press Enter for default): ").strip()
+    
+    if not user_topic:
+        user_topic = "Open Source LLMs vs Proprietary Models Enterprise Adoption Trends 2025 2026"
+        print(f"No topic entered. Using default: '{user_topic}'")
+        
+    run_research_crew(user_topic)
