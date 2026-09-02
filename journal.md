@@ -82,3 +82,14 @@ When the reviewer issued a `REVISION NEEDED` verdict in Topic 1, the framework h
 ## 3. Architecture Verdict: Sequential vs. Hierarchical
 * For our 3-stage research pipeline with predictable dependencies, **`Process.sequential`** remains faster, cheaper, and more deterministic.
 * **`Process.hierarchical`** adds value when the task flow is dynamic or emergent, but introduces coordination token overhead for deterministic handoffs.
+
+# Day 5 Journal: Production-Grade Multi-Agent Research System
+
+## 1. Quality & Fault Tolerance Across Test Runs
+* **Failure Bounds:** Implementing `max_iter=5` and `max_retry_limit=2` prevented infinite execution loops when search tool queries returned sparse or empty responses.
+* **Consistency:** Tested across three distinct technical domains. Execution times remained bounded between 19.8s and 24.0s, with all reports exceeding the 400-word threshold and earning unanimous `VERDICT: APPROVED` audit reviews.
+
+## 2. Hardened 3-Agent Crew vs. Day 1 Baseline
+* **Artifact Persistence:** Day 1 output was lost in terminal scrollback. Day 5 saves timestamped, sanitized Markdown deliverables in `/reports` with execution metadata.
+* **Quality Assurance Gate:** The Reviewer agent acts as an automated quality gate, confirming word count, section layout, and factual alignment with source notes before finalizing.
+* **Verdict:** The operational overhead (approx. 20s execution time) is well justified by the output consistency, structural compliance, and reliability of the saved deliverables.
